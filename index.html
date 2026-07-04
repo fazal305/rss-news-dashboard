@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <title>RSS Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="top-bar">
+      <a class="logo" href="#" aria-label="RSS Dashboard home">
+        <span class="logo-icon" aria-hidden="true">📡</span>
+        <span>RSS DASHBOARD</span>
+      </a>
+
+      <label class="search-wrap" for="searchInput">
+        <span class="sr-only">Search articles</span>
+        <input
+          id="searchInput"
+          class="search-input"
+          type="search"
+          placeholder="Search feeds..."
+          autocomplete="off"
+        />
+      </label>
+
+      <button
+        id="refreshBtn"
+        class="icon-btn refresh-btn"
+        type="button"
+        aria-label="Refresh feeds"
+        title="Refresh feeds"
+      >
+        ↻
+      </button>
+
+      <p id="lastRefreshed" class="last-refreshed">Last updated: never</p>
+
+      <button
+        id="bookmarkToggleBtn"
+        class="icon-btn bookmark-toggle-btn"
+        type="button"
+        aria-label="Toggle bookmarks panel"
+        title="Toggle bookmarks"
+        aria-expanded="true"
+      >
+        ☆
+      </button>
+    </header>
+
+    <div class="app-layout">
+      <aside class="sidebar" aria-label="Feed categories">
+        <div class="sidebar-header">
+          <h2>Sources</h2>
+        </div>
+        <nav
+          id="categoryList"
+          class="category-list"
+          aria-label="Categories"
+        ></nav>
+      </aside>
+
+      <main class="content" aria-live="polite">
+        <section class="feed-heading" aria-label="Current feed">
+          <div>
+            <p class="eyebrow">Live RSS Intelligence</p>
+            <h1 id="feedTitle">All Stories</h1>
+          </div>
+          <p id="articleCount" class="article-count">0 articles</p>
+        </section>
+
+        <section
+          id="articleGrid"
+          class="article-grid"
+          aria-label="Articles"
+        ></section>
+      </main>
+
+      <aside
+        id="bookmarksPanel"
+        class="bookmarks-panel"
+        aria-label="Bookmarked articles"
+      >
+        <div class="bookmarks-header">
+          <div>
+            <p class="eyebrow">Saved</p>
+            <h2>Bookmarks</h2>
+          </div>
+          <button
+            id="clearBookmarksBtn"
+            class="clear-bookmarks-btn"
+            type="button"
+          >
+            Clear
+          </button>
+        </div>
+
+        <div id="bookmarkConfirm" class="bookmark-confirm" hidden>
+          <p>Clear all bookmarks?</p>
+          <div class="confirm-actions">
+            <button id="confirmClearBtn" type="button">Yes</button>
+            <button id="cancelClearBtn" type="button">No</button>
+          </div>
+        </div>
+
+        <div id="bookmarksList" class="bookmarks-list"></div>
+      </aside>
+    </div>
+    <script src="feeds.js"></script>
+    <script src="rss-parser.js"></script>
+    <script src="bookmarks.js"></script>
+    <script src="sample-data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

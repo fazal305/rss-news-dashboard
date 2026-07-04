@@ -1,0 +1,27 @@
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.local
+
+# Dependency folders if the project is extended later
+node_modules/
+
+# Build output if the project is extended later
+dist/
+build/
+
+# Temporary files
+tmp/
+temp/
+.cache/
