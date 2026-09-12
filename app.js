@@ -67,6 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadAllFeeds() {
         state.isLoading = true;
 
+        const wasOffline = typeof navigator !== 'undefined' && navigator.onLine === false;
+        const skeletonShown = state.articles.length === 0 && typeof SAMPLE_ARTICLES === 'undefined';
+
         if (typeof SAMPLE_ARTICLES !== 'undefined' && state.articles.length === 0) {
             state.articles = SAMPLE_ARTICLES;
             syncBookmarkFlags();
@@ -76,7 +79,20 @@ document.addEventListener('DOMContentLoaded', () => {
             showLoadingSkeleton();
         }
 
+        // Flags a slow connection if the fetch is still pending after ~5 seconds.
+        const slowNetworkTimer = setTimeout(() => {
+            if (skeletonShown) {
+                showSlowNetworkNotice();
+            }
+        }, 5000);
+
         try {
+            // Offline devices skip straight to the cached/demo fallback below instead of
+            // waiting on a live fetch that has no chance of succeeding.
+            if (wasOffline) {
+                throw new Error('Offline: navigator.onLine reported false.');
+            }
+
             const liveArticles = await fetchAllFeeds(FEEDS);
 
             if (liveArticles.length > 0) {
@@ -91,23 +107,27 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             const cached = getCachedArticles();
+            const unavailableReason = wasOffline ? "You're offline." : 'Live feeds unavailable.';
 
             if (cached.length > 0) {
                 state.articles = cached;
                 syncBookmarkFlags();
                 applyFilters();
-                lastRefreshed.textContent = 'Live feeds unavailable. Showing cached stories.';
+                lastRefreshed.textContent = wasOffline
+                    ? "You're offline — showing cached articles."
+                    : 'Live feeds unavailable. Showing cached stories.';
             } else if (state.articles.length === 0 && typeof SAMPLE_ARTICLES !== 'undefined') {
                 state.articles = SAMPLE_ARTICLES;
                 syncBookmarkFlags();
                 applyFilters();
-                lastRefreshed.textContent = 'Live feeds unavailable. Showing demo stories.';
+                lastRefreshed.textContent = `${unavailableReason} Showing demo stories.`;
             } else {
-                lastRefreshed.textContent = 'Live feeds unavailable. Showing current stories.';
+                lastRefreshed.textContent = `${unavailableReason} Showing current stories.`;
             }
 
             console.error('Feed load failed.', error);
         } finally {
+            clearTimeout(slowNetworkTimer);
             state.isLoading = false;
         }
     }
@@ -352,6 +372,18 @@ document.addEventListener('DOMContentLoaded', () => {
             card.append(image, content);
             articleGrid.appendChild(card);
         }
+    }
+
+    // Appends a "still working on it" hint below the skeleton when a fetch is taking a while.
+    function showSlowNetworkNotice() {
+        if (articleGrid.querySelector('.slow-network-notice')) {
+            return;
+        }
+
+        const notice = document.createElement('div');
+        notice.className = 'slow-network-notice';
+        notice.textContent = 'Still fetching feeds...';
+        articleGrid.appendChild(notice);
     }
 
     // Displays an error or fallback message in the article grid.

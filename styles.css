@@ -502,6 +502,14 @@ img {
   color: var(--red);
 }
 
+.slow-network-notice {
+  grid-column: 1 / -1;
+  padding: 12px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.85rem;
+}
+
 .skeleton-card {
   min-height: 360px;
   overflow: hidden;
